@@ -19,29 +19,32 @@ It produces a **theoretical option price** given inputs like spot price, strike,
 
 For a call option, the price is given by:
 
-\[
+$$
 C = S e^{-qT} \Phi(d_1) - K e^{-rT} \Phi(d_2)
-\]
+$$
 
 For a put option:
 
-\[
+$$
 P = K e^{-rT} \Phi(-d_2) - S e^{-qT} \Phi(-d_1)
-\]
+$$
 
 Where:
 
-\[
-d_1 = \frac{\ln(S/K) + (r-q+0.5\sigma^2)T}{\sigma \sqrt{T}}, \quad d_2 = d_1 - \sigma \sqrt{T}
-\]
+$$
+d_1 = \frac{\ln(S/K) + (r-q+0.5\sigma^2)T}{\sigma \sqrt{T}}, \quad 
+d_2 = d_1 - \sigma \sqrt{T}
+$$
 
-- \(S\) = current stock price  
-- \(K\) = strike price  
-- \(T\) = time to expiration (in years)  
-- \(r\) = risk-free rate  
-- \(q\) = dividend yield  
-- \(\sigma\) = volatility  
-- \(\Phi\) = cumulative distribution function of standard normal  
+
+- $$S$$ = current stock price  
+- $$K$$ = strike price  
+- $$T$$ = time to expiration (in years)  
+- $$r$$ = risk-free rate  
+- $$q$$ = dividend yield  
+- $$\sigma$$ = volatility  
+- $$\Phi$$ = cumulative distribution function of standard normal
+ 
 
 This formula calculates a theoretical option price based on market inputs.
 
