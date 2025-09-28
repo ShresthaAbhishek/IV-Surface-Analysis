@@ -1,0 +1,8 @@
+yfinance==0.2.40
+pandas==2.2.2
+numpy==1.26.4
+matplotlib==3.9.2
+jax==0.4.30
+jaxlib==0.4.30
+scipy==1.14.1
+streamlit==1.39.0
