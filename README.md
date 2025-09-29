@@ -29,35 +29,38 @@ It provides a **closed-form formula** for option prices:
 
 **Call Option:**
 
-\[
+$$
 C = S e^{-qT} \Phi(d_1) - K e^{-rT} \Phi(d_2)
-\]
+$$
 
 **Put Option:**
 
-\[
+$$
 P = K e^{-rT} \Phi(-d_2) - S e^{-qT} \Phi(-d_1)
-\]
+$$
 
 Where:
 
-\[
-d_1 = \frac{\ln(S/K) + (r-q+0.5\sigma^2)T}{\sigma \sqrt{T}}, \quad d_2 = d_1 - \sigma \sqrt{T}
-\]
+$$
+d_1 = \frac{\ln(S/K) + (r-q+0.5\sigma^2)T}{\sigma \sqrt{T}}, \quad
+d_2 = d_1 - \sigma \sqrt{T}
+$$
 
-- \(S\) = current stock price  
-- \(K\) = strike price  
-- \(T\) = time to expiration (in years)  
-- \(r\) = risk-free rate  
-- \(q\) = dividend yield  
-- \(\sigma\) = volatility  
-- \(\Phi\) = cumulative distribution function of standard normal  
+**Parameters:**
 
-**Intuition:**  
+- $S$ = current stock price  
+- $K$ = strike price  
+- $T$ = time to expiration (in years)  
+- $r$ = risk-free rate  
+- $q$ = dividend yield  
+- $\sigma$ = volatility  
+- $\Phi$ = cumulative distribution function of the standard normal  
 
-* \(d_1\) captures how far “in-the-money” an option is, adjusted for drift and volatility  
-* \(d_2\) accounts for the remaining uncertainty until expiration  
-* The formula essentially computes the **expected discounted payoff** under risk-neutral probabilities  
+**Intuition:**
+
+- $d_1$ captures how far “in-the-money” an option is, adjusted for expected growth and volatility  
+- $d_2$ accounts for the remaining uncertainty until expiration  
+- The formula calculates the **expected discounted payoff** under risk-neutral probabilities, giving the fair theoretical price of the option
 
 This theoretical framework forms the basis for **computing implied volatility**, which is the volatility value that equates the Black-Scholes price to the observed market price.
 
@@ -103,7 +106,7 @@ Understanding implied volatility is critical in options trading and risk managem
 
 Comparison of **computed IVs** from the Black-Scholes model against **market IVs** across various strikes.  
 
-![2D IV Comparison](images/computed%20vs%20Market%20IV.png.png)
+![2D IV Comparison](images/computed%20vs%20Market%20IV.png)
 
 ---
 
@@ -111,7 +114,7 @@ Comparison of **computed IVs** from the Black-Scholes model against **market IVs
 
 3D visualization of the implied volatility surface plotted against **moneyness** (strike/spot ratio) and **time to expiry**.  
 
-![3D IV Surface](images/IV%20Comparision.png.png)
+![3D IV Surface](images/IV%20Comparision.png)
 
 ---
 
