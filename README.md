@@ -103,7 +103,7 @@ Understanding implied volatility is critical in options trading and risk managem
 
 Comparison of **computed IVs** from the Black-Scholes model against **market IVs** across various strikes.  
 
-![2D IV Comparison](images/iv_comparison.png)
+![2D IV Comparison](images/computed%20vs%20Market%20IV.png.png)
 
 ---
 
@@ -111,7 +111,7 @@ Comparison of **computed IVs** from the Black-Scholes model against **market IVs
 
 3D visualization of the implied volatility surface plotted against **moneyness** (strike/spot ratio) and **time to expiry**.  
 
-![3D IV Surface](images/iv_surface.png)
+![3D IV Surface](images/IV%20Comparision.png.png)
 
 ---
 
@@ -119,16 +119,9 @@ Comparison of **computed IVs** from the Black-Scholes model against **market IVs
 
 Zoomed-in IV surface for **ATM ±15%** strikes, where most trading activity occurs.  
 
-![ATM Surface](images/atm_surface.png)
+![ATM Surface](images/IV%20Comparision%20±%2015%25.png)
 
 ---
-
-### 4. Option Pricing Error Distribution
-
-Histogram showing the distribution of pricing errors, highlighting where the model under- or over-prices options.  
-
-![Error Distribution](images/price_error_hist.png)
-
 ---
 
 ## High-Level Workflow
@@ -149,3 +142,4 @@ Histogram showing the distribution of pricing errors, highlighting where the mod
 * [Python Finance Tutorials: QuantStart](https://www.quantstart.com/articles/)  
 
 ---
+
