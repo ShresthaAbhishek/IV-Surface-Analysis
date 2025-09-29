@@ -1,29 +1,39 @@
 # Implied Volatility Analysis for Options Pricing
 
-Hi, I'm Abhishek. This project explores options pricing by computing and analyzing implied volatility (IV) for SPY ETF options using the Black-Scholes model. It fetches real-time option chain data, calculates IV with a bisection solver, compares it to market IV, and visualizes results with 2D and 3D plots to reveal volatility surface patterns. The stock can be chaged as desired by chainging the ticker symbol.
-
----
-## What is the Black-Scholes Model?
-
-The **Black-Scholes model** is a cornerstone of quantitative finance used to price European-style options. It assumes:
-
-* Constant volatility and risk-free interest rate
-* Log-normal distribution of the underlying asset
-* No arbitrage opportunities
-
-It produces a **theoretical option price** given inputs like spot price, strike, time to expiry, risk-free rate, and volatility.
+Hi, I'm Abhishek. This project explores options pricing by computing and analyzing implied volatility (IV) for SPY ETF options using the Black-Scholes model. It fetches real-time option chain data, calculates IV with a bisection solver, compares it to market IV, and visualizes results with 2D and 3D plots to reveal volatility surface patterns. The stock ticker can be changed as desired.
 
 ---
 
-## Black-Scholes Formula
+## Purpose of the Project
 
-For a call option, the price is given by:
+The main goal of this project is to **bridge theoretical option pricing models with real market data**. Specifically, it aims to:
+
+* Calculate theoretical option prices using the **Black-Scholes model**  
+* Compute **implied volatility** from market-traded options  
+* Compare model outputs with **market-reported IVs**  
+* Visualize the **volatility surface** across strikes and expiration dates  
+
+This helps traders, quants, and researchers understand the **dynamics of option prices**, uncover pricing discrepancies, and evaluate the behavior of implied volatility across moneyness and time to expiry.
+
+---
+
+## Black-Scholes Model: Idea & Formulas
+
+The **Black-Scholes model** is a foundational model for European option pricing. It assumes:
+
+* The underlying stock follows a **log-normal stochastic process**  
+* Constant risk-free interest rate and volatility  
+* No arbitrage opportunities  
+
+It provides a **closed-form formula** for option prices:
+
+**Call Option:**
 
 $$
 C = S e^{-qT} \Phi(d_1) - K e^{-rT} \Phi(d_2)
 $$
 
-For a put option:
+**Put Option:**
 
 $$
 P = K e^{-rT} \Phi(-d_2) - S e^{-qT} \Phi(-d_1)
@@ -32,229 +42,107 @@ $$
 Where:
 
 $$
-d_1 = \frac{\ln(S/K) + (r-q+0.5\sigma^2)T}{\sigma \sqrt{T}}, \quad 
+d_1 = \frac{\ln(S/K) + (r-q+0.5\sigma^2)T}{\sigma \sqrt{T}}, \quad
 d_2 = d_1 - \sigma \sqrt{T}
 $$
 
+**Parameters:**
 
-- $$S$$ = current stock price  
-- $$K$$ = strike price  
-- $$T$$ = time to expiration (in years)  
-- $$r$$ = risk-free rate  
-- $$q$$ = dividend yield  
-- $$\sigma$$ = volatility  
-- $$\Phi$$ = cumulative distribution function of standard normal
- 
+- $S$ = current stock price  
+- $K$ = strike price  
+- $T$ = time to expiration (in years)  
+- $r$ = risk-free rate  
+- $q$ = dividend yield  
+- $\sigma$ = volatility  
+- $\Phi$ = cumulative distribution function of the standard normal  
 
-This formula calculates a theoretical option price based on market inputs.
+**Intuition:**
 
----
+- $d_1$ captures how far “in-the-money” an option is, adjusted for expected growth and volatility  
+- $d_2$ accounts for the remaining uncertainty until expiration  
+- The formula calculates the **expected discounted payoff** under risk-neutral probabilities, giving the fair theoretical price of the option
 
-## What This Project Does
-
-* Fetches **option chains** for a given stock using `yfinance`  
-* Computes **implied volatilities** using a **bisection solver**  
-* Compares computed IVs to market IVs  
-* Generates **accuracy metrics** (MAE, RMSE, Max Error)  
-* Visualizes **2D and 3D implied volatility surfaces**  
-* Highlights the **ATM ±15% moneyness range** for deeper analysis  
-
-This workflow demonstrates practical option pricing, calibration, and visual analysis used in quantitative trading.
+This theoretical framework forms the basis for **computing implied volatility**, which is the volatility value that equates the Black-Scholes price to the observed market price.
 
 ---
 
-## Step 1: Import Libraries
+## Key Ideas Used
 
-The project uses Python libraries for:
+This project combines several fundamental quantitative finance and computational concepts:
 
-* **Data handling:** `pandas`, `numpy`  
-* **Market data:** `yfinance`  
-* **Mathematics & statistics:** `jax`, `scipy`  
-* **Visualization:** `matplotlib`, `plotly`  
+* **Black-Scholes Model:** Pricing European options with closed-form formulas  
+* **Implied Volatility (IV):** IV is inferred from market prices using a **numerical bisection solver**  
+* **Data Handling:** Real-time option chain data is fetched using `yfinance`  
+* **Visualization:** 2D and 3D plots illustrate the volatility surface and ATM ±15% range  
+* **Numerical Methods:** Bisection root-finding, grid interpolation, and Gaussian smoothing are applied for accurate and smooth IV surfaces  
 
-```python
-import yfinance as yf
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from datetime import datetime
-from jax import grad
-import jax.numpy as jnp
-from jax.scipy.stats import norm as jnorm
-from scipy.interpolate import griddata
-from scipy.ndimage import gaussian_filter
-import plotly.graph_objects as go
-```
-Step 2: Black-Scholes Pricing Function
---------------------------------------
+---
 
-We define a vectorized function to calculate **call and put option prices**:
- ```python
-  def solve_for_iv_bisection(S, K, T, r, price, otype="call", tol=1e-6, max_iter=100):
-    sigma_low, sigma_high = 0.01, 5.0
-    for _ in range(max_iter):
-        sigma_mid = (sigma_low + sigma_high) / 2
-        price_mid = float(black_scholes(S, K, T, r, sigma_mid, otype=otype))
-        if abs(price_mid - price) < tol:
-            return sigma_mid
-        if price_mid > price:
-            sigma_high = sigma_mid
-        else:
-            sigma_low = sigma_mid
-    return sigma_mid
+## Why This Matters
 
- ```
- Step 4: Fetch Market Option Data
---------------------------------
+Understanding implied volatility is critical in options trading and risk management:
 
-We use `yfinance` to collect the option chain:
+* Provides a **practical workflow** for assessing option prices against theoretical models  
+* Highlights **differences between model predictions and market behavior**  
+* Visualizes **risk and uncertainty** in the options market through volatility surfaces  
+* Develops familiarity with **numerical techniques and data visualization** used in quantitative finance  
 
--   Select stock (`TSLA`)
+---
 
--   Get **calls and puts** for the first 5 expirations
+## Skills Demonstrated
 
--   Calculate **time to expiry** in years
+* Option pricing with the **Black-Scholes model**  
+* Implied volatility computation using **numerical root-finding**  
+* Real-world data handling with **Python, pandas, and yfinance**  
+* Visualization using **Matplotlib and Plotly**  
+* Evaluating model accuracy and identifying **ATM and near-the-money option patterns**  
+* Working with **numerical interpolation and smoothing** for visualization  
 
-```python
-ticker_symbol = "TSLA"
-ticker = yf.Ticker(ticker_symbol)
-S = ticker.history(period="1d")["Close"].iloc[-1]
-r = 0.05
+---
 
-expirations = ticker.options[:5]
-all_options = []
+## Example Outputs
 
-for exp in expirations:
-    chain = ticker.option_chain(exp)
-    for df, otype in [(chain.calls, "call"), (chain.puts, "put")]:
-        temp = df.copy()
-        temp["type"] = otype
-        temp["expirationDate"] = pd.to_datetime(exp)
-        all_options.append(temp)
+### 1. 2D Implied Volatility Comparison
 
-options_df = pd.concat(all_options)
-today = datetime.today()
-options_df["T"] = (options_df["expirationDate"] - today).dt.days / 365
-```
+Comparison of **computed IVs** from the Black-Scholes model against **market IVs** across various strikes.  
 
-Step 5: Compute Implied Volatilities
-------------------------------------
+![2D IV Comparison](images/computed%20vs%20Market%20IV.png)
 
-We calculate IVs for all traded options and compare them to market-reported IVs.
+---
 
-* * * * *
+### 2. 3D Implied Volatility Surface
 
-Step 6: Create Comparison Table
--------------------------------
+3D visualization of the implied volatility surface plotted against **moneyness** (strike/spot ratio) and **time to expiry**.  
 
-Columns include:
+![3D IV Surface](images/IV%20Comparision.png)
 
--   Strike, Expiration, Option Type
+---
 
--   Market Price, Computed IV, Market IV
+### 3. ATM ±15% IV Surface Focus
 
--   Theoretical Price, Price Error, IV Error
+Zoomed-in IV surface for **ATM ±15%** strikes, where most trading activity occurs.  
 
-```python
-comparison_df = pd.DataFrame({
-    "Strike": strikes,
-    "Expiration": expiries,
-    "OptionType": option_types,
-    "MarketPrice": market_prices,
-    "ComputedIV": ivs,
-    "MarketIV": market_IVs
-})
-```
+![ATM Surface](images/IV%20Comparision%20±%2015%25.png)
 
-Step 7: Accuracy Metrics
-------------------------
+---
+---
 
-Compute **MAE, RMSE, Max Error** for:
+## High-Level Workflow
 
--   All traded options
+1. Fetch real-time option chain data using `yfinance`.  
+2. Calculate theoretical option prices with the **Black-Scholes formula**.  
+3. Solve for implied volatility (IV) numerically via a **bisection solver**.  
+4. Compare computed IV to market IVs and generate accuracy metrics.  
+5. Visualize IVs across strikes and expirations using 2D scatter plots and 3D surfaces.  
+6. Focus on **ATM ±15% strikes** for detailed insights into high-liquidity options.  
 
--   ATM ±15% moneyness range
+---
 
-```python
-def calc_metrics(df):
-    IV_Error = df["IV_Error"]
-    Price_Error = df["PriceError"]
-    return {
-        "MAE_IV": IV_Error.abs().mean(),
-        "MaxAE_IV": IV_Error.abs().max(),
-        "RMSE_IV": np.sqrt((IV_Error**2).mean()),
-        "MAE_Price": Price_Error.mean(),
-        "MaxAE_Price": Price_Error.max(),
-        "RMSE_Price": np.sqrt((Price_Error**2).mean())
-    }
-```
-Step 8: 2D IV Comparison Plot
------------------------------
+## Resources & References
 
-Visualize computed IVs against market IVs:
+* [Black-Scholes: Investopedia](https://www.investopedia.com/terms/b/blackscholes.asp)  
+* [Option Greeks and IV](https://www.optionsplaybook.com/)  
+* [Python Finance Tutorials: QuantStart](https://www.quantstart.com/articles/)  
 
--   Blue = computed
+---
 
--   Red = market
-
-```python
-plt.scatter(strikes, ivs, label="Computed IV")
-plt.scatter(strikes, market_IVs, label="Market IV")
-plt.xlabel("Strike")
-plt.ylabel("Implied Volatility")
-plt.legend()
-plt.show()
-```
-Step 9: 3D IV Surfaces
-----------------------
-
--   Use **moneyness** and **time to expiry** as axes
-
--   Generate **smoothed IV surfaces** using Gaussian filtering
-
--   Visualize **computed, market, and difference surfaces**
-
-* * * * *
-
-Step 10: 3D ATM ±15% IV Surfaces
---------------------------------
-
--   Focus on near-the-money options for a more meaningful analysis
-
--   Overlay **current stock price**
-
--   Compare computed IV, market IV, and differences
-
-This helps identify **pricing biases** and **model accuracy** near the most liquid strikes.
-
-* * * * *
-
-Why This Matters
-----------------
-
--   Provides a **practical workflow** for option pricing and implied volatility computation
-
--   Highlights **gaps between theoretical models and market prices**
-
--   Teaches **numerical techniques** (bisection method, interpolation, smoothing)
-
--   Essential for roles in **quant trading, risk management, and derivatives research**
-
-* * * * *
-
-Skills Demonstrated
--------------------
-
--   Option pricing with **Black-Scholes model**
-
--   Implied volatility computation
-
--   Data analysis using **Python, pandas, NumPy**
-
--   Visualization with **Matplotlib** and **Plotly**
-
--   Accuracy evaluation and surface interpolation
-
--   Handling **ATM and near-the-money options**
-
-* * * * *
